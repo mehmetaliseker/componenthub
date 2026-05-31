@@ -1,0 +1,15 @@
+services:
+  componenthub-postgres:
+    image: postgres:16
+    container_name: componenthub-postgres
+    environment:
+      POSTGRES_DB: componenthub
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - componenthub_pg_data:/var/lib/postgresql/data
+
+volumes:
+  componenthub_pg_data:
