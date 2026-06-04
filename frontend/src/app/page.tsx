@@ -10,7 +10,7 @@ export default function HomePage() {
 
       <div className="relative z-10 text-center">
         <p className="mb-4 inline-block rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-violet-300">
-          React Bits tarzı galeri
+          ComponentHub
         </p>
         <h1 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight text-white sm:text-6xl">
           ComponentHub ile{" "}
@@ -20,8 +20,8 @@ export default function HomePage() {
           , kodu kopyala
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-zinc-400">
-          Kayıtlı React ve Next.js bileşenlerini güvenli önizlemelerle keşfet, açıklamalarını
-          oku ve üretime hazır kodu tek tıkla al.
+          Kayıtlı React ve Next.js componentlerini güvenli önizlemelerle keşfet,
+          kullanım açıklamalarını oku ve üretime hazır kodu tek tıkla al.
         </p>
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link
@@ -34,7 +34,7 @@ export default function HomePage() {
             href="/admin/components/new"
             className="rounded-full border border-white/15 px-8 py-3.5 text-sm font-semibold text-zinc-200 transition hover:bg-white/5"
           >
-            Yeni Component Ekle
+            Component Ekle
           </Link>
         </div>
       </div>
@@ -42,16 +42,16 @@ export default function HomePage() {
       <div className="relative z-10 mt-20 grid gap-6 sm:grid-cols-3">
         {[
           {
-            title: "Canlı Preview",
-            text: "Hazır bileşenler previewType ile güvenli şekilde render edilir.",
+            title: "Canlı Önizleme",
+            text: "Hazır componentler güvenli önizleme tipleriyle responsive olarak gösterilir.",
           },
           {
             title: "Kod Kopyalama",
-            text: "TSX ve CSS kodunu ayrı sekmelerde inceleyip kopyala.",
+            text: "JSX, TSX, CSS ve TailwindCSS sürümlerini kontrollü sekmelerde inceleyip kopyala.",
           },
           {
             title: "Güvenli Admin",
-            text: "Kullanıcı kodu asla çalıştırılmaz; yalnızca gösterilir.",
+            text: "Kullanıcı kodu doğrudan çalıştırılmaz; veri modeli kontrollü şekilde saklanır.",
           },
         ].map((item) => (
           <div

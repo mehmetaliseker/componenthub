@@ -10,11 +10,61 @@ const initialForm: CreateComponentBody = {
   name: "",
   slug: "",
   description: "",
-  category: "General",
+  category: "Genel",
   previewType: "custom",
-  componentCode: "",
-  styleCode: "",
+  jsxCode: "",
+  tsxCode: "",
+  cssCode: "",
+  tailwindJsxCode: "",
+  tailwindTsxCode: "",
+  dependencies: "",
+  responsiveNotes: "",
 };
+
+function hasText(value: string | undefined): boolean {
+  return Boolean(value && value.trim().length > 0);
+}
+
+function hasResponsiveBreakpoint(cssCode: string): boolean {
+  const normalizedCss = cssCode.toLowerCase();
+  return normalizedCss.includes("@media") || normalizedCss.includes("@container");
+}
+
+function cleanOptional(value: string | undefined): string | undefined {
+  const text = value?.trim();
+  return text ? text : undefined;
+}
+
+function validateForm(form: CreateComponentBody): string | null {
+  if (!hasText(form.name)) {
+    return "Component adı zorunludur.";
+  }
+  if (!hasText(form.slug)) {
+    return "Slug alanı zorunludur.";
+  }
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(form.slug.trim())) {
+    return "Slug yalnızca küçük harf, rakam ve tire içermelidir.";
+  }
+  if (!hasText(form.description)) {
+    return "Açıklama alanı zorunludur.";
+  }
+  if (!hasText(form.category)) {
+    return "Kategori alanı zorunludur.";
+  }
+  if (!hasText(form.previewType)) {
+    return "Önizleme tipi zorunludur.";
+  }
+  if (!hasText(form.jsxCode) && !hasText(form.tsxCode)) {
+    return "JSX veya TSX kodlarından en az biri girilmelidir.";
+  }
+  if (!hasText(form.cssCode)) {
+    return "CSS kodu zorunludur. ComponentHub CSS kodunu ana stil kaynağı olarak saklar.";
+  }
+  if (!hasResponsiveBreakpoint(form.cssCode)) {
+    return "CSS kodu en az bir @media veya @container breakpoint içermelidir.";
+  }
+  return null;
+}
 
 export function NewComponentForm() {
   const [form, setForm] = useState<CreateComponentBody>(initialForm);
@@ -32,16 +82,31 @@ export function NewComponentForm() {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
-    setLoading(true);
     setError(null);
     setSuccessSlug(null);
 
+    const validationMessage = validateForm(form);
+    if (validationMessage) {
+      setError(validationMessage);
+      return;
+    }
+
+    setLoading(true);
+
     try {
       const created = await componentApi.create({
-        ...form,
+        name: form.name.trim(),
         slug: form.slug.trim().toLowerCase(),
-        description: form.description?.trim() || undefined,
-        styleCode: form.styleCode?.trim() || undefined,
+        description: form.description.trim(),
+        category: form.category.trim(),
+        previewType: form.previewType.trim(),
+        jsxCode: cleanOptional(form.jsxCode),
+        tsxCode: cleanOptional(form.tsxCode),
+        cssCode: form.cssCode.trim(),
+        tailwindJsxCode: cleanOptional(form.tailwindJsxCode),
+        tailwindTsxCode: cleanOptional(form.tailwindTsxCode),
+        dependencies: cleanOptional(form.dependencies),
+        responsiveNotes: cleanOptional(form.responsiveNotes),
         builtin: false,
       });
       setForm(initialForm);
@@ -50,11 +115,11 @@ export function NewComponentForm() {
       if (err instanceof ApiError) {
         const slugMessage =
           err.status === 409
-            ? `Slug zaten kullanılıyor: "${form.slug.trim().toLowerCase()}"`
+            ? `Bu slug zaten kullanılıyor: "${form.slug.trim().toLowerCase()}"`
             : err.message;
         setError(slugMessage);
       } else {
-        setError("Component kaydedilemedi. API erişimini kontrol edin.");
+        setError("Component kaydedilirken bir hata oluştu. API bağlantısını kontrol edin.");
       }
     } finally {
       setLoading(false);
@@ -74,19 +139,25 @@ export function NewComponentForm() {
 
       {successSlug && (
         <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
-          Component başarıyla kaydedildi.{" "}
+          Component başarıyla oluşturuldu.{" "}
           <Link
             href={`/components/${successSlug}`}
             className="font-medium underline underline-offset-2 hover:text-white"
           >
-            Detay sayfasına git →
+            Detay sayfasına git
           </Link>
         </div>
       )}
 
+      <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/10 p-4 text-sm leading-relaxed text-cyan-100">
+        Responsive-first kuralı: CSS kodu zorunludur ve açık bir @media veya
+        @container breakpoint içermelidir. TailwindCSS kodları opsiyoneldir ve
+        yalnızca doldurulduklarında kod ekranındaki TailwindCSS seçeneğini aktif eder.
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block space-y-2">
-          <span className="text-sm text-zinc-400">Component Adı</span>
+          <span className="text-sm text-zinc-400">Component adı *</span>
           <input
             required
             value={form.name}
@@ -95,31 +166,32 @@ export function NewComponentForm() {
           />
         </label>
         <label className="block space-y-2">
-          <span className="text-sm text-zinc-400">Slug</span>
+          <span className="text-sm text-zinc-400">Slug *</span>
           <input
             required
             value={form.slug}
             onChange={(e) => updateField("slug", e.target.value)}
-            placeholder="ornek-component"
+            placeholder="responsive-kart"
             className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-2.5 font-mono text-sm text-white outline-none focus:border-violet-500"
           />
         </label>
       </div>
 
       <label className="block space-y-2">
-        <span className="text-sm text-zinc-400">Açıklama</span>
+        <span className="text-sm text-zinc-400">Açıklama *</span>
         <textarea
-          value={form.description ?? ""}
+          required
+          value={form.description}
           onChange={(e) => updateField("description", e.target.value)}
           rows={3}
-          placeholder="Component ne işe yarar?"
+          placeholder="Componentin ne yaptığını ve hangi senaryoda kullanılacağını açıklayın."
           className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-2.5 text-white outline-none focus:border-violet-500"
         />
       </label>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block space-y-2">
-          <span className="text-sm text-zinc-400">Kategori</span>
+          <span className="text-sm text-zinc-400">Kategori *</span>
           <input
             required
             value={form.category}
@@ -128,7 +200,7 @@ export function NewComponentForm() {
           />
         </label>
         <label className="block space-y-2">
-          <span className="text-sm text-zinc-400">Preview Type</span>
+          <span className="text-sm text-zinc-400">Önizleme tipi *</span>
           <input
             required
             value={form.previewType}
@@ -139,34 +211,96 @@ export function NewComponentForm() {
         </label>
       </div>
 
+      <div className="grid gap-4 xl:grid-cols-2">
+        <label className="block space-y-2">
+          <span className="text-sm text-zinc-400">Tailwindsiz JSX kodu</span>
+          <textarea
+            value={form.jsxCode ?? ""}
+            onChange={(e) => updateField("jsxCode", e.target.value)}
+            rows={12}
+            placeholder={"export default function Ornek() {\n  return <section className=\"ornek\" />;\n}"}
+            className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 font-mono text-[13px] leading-6 text-white outline-none focus:border-violet-500"
+            spellCheck={false}
+          />
+        </label>
+        <label className="block space-y-2">
+          <span className="text-sm text-zinc-400">Tailwindsiz TSX kodu</span>
+          <textarea
+            value={form.tsxCode ?? ""}
+            onChange={(e) => updateField("tsxCode", e.target.value)}
+            rows={12}
+            placeholder={"type Props = { label: string };\n\nexport default function Ornek({ label }: Props) {\n  return <button className=\"ornek\">{label}</button>;\n}"}
+            className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 font-mono text-[13px] leading-6 text-white outline-none focus:border-violet-500"
+            spellCheck={false}
+          />
+        </label>
+      </div>
+
       <label className="block space-y-2">
-        <span className="text-sm text-zinc-400">TSX Component Code</span>
+        <span className="text-sm text-zinc-400">CSS kodu *</span>
         <textarea
           required
-          value={form.componentCode}
-          onChange={(e) => updateField("componentCode", e.target.value)}
-          rows={14}
-          placeholder={'"use client";\n\nexport default function MyComponent() {\n  return <div />;\n}'}
+          value={form.cssCode}
+          onChange={(e) => updateField("cssCode", e.target.value)}
+          rows={12}
+          placeholder={".ornek {\n  display: grid;\n  gap: 1rem;\n  max-width: 100%;\n}\n\n@media (max-width: 640px) {\n  .ornek {\n    grid-template-columns: 1fr;\n  }\n}"}
           className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 font-mono text-[13px] leading-6 text-white outline-none focus:border-violet-500"
           spellCheck={false}
         />
       </label>
 
-      <label className="block space-y-2">
-        <span className="text-sm text-zinc-400">CSS Code (opsiyonel)</span>
-        <textarea
-          value={form.styleCode ?? ""}
-          onChange={(e) => updateField("styleCode", e.target.value)}
-          rows={8}
-          placeholder="Tailwind kullanıyorsanız boş bırakabilirsiniz."
-          className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 font-mono text-[13px] leading-6 text-white outline-none focus:border-violet-500"
-          spellCheck={false}
-        />
-      </label>
+      <div className="grid gap-4 xl:grid-cols-2">
+        <label className="block space-y-2">
+          <span className="text-sm text-zinc-400">TailwindCSS JSX kodu (opsiyonel)</span>
+          <textarea
+            value={form.tailwindJsxCode ?? ""}
+            onChange={(e) => updateField("tailwindJsxCode", e.target.value)}
+            rows={8}
+            placeholder="Yalnızca elle kontrol edilmiş TailwindCSS JSX sürümünüz varsa doldurun."
+            className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 font-mono text-[13px] leading-6 text-white outline-none focus:border-violet-500"
+            spellCheck={false}
+          />
+        </label>
+        <label className="block space-y-2">
+          <span className="text-sm text-zinc-400">TailwindCSS TSX kodu (opsiyonel)</span>
+          <textarea
+            value={form.tailwindTsxCode ?? ""}
+            onChange={(e) => updateField("tailwindTsxCode", e.target.value)}
+            rows={8}
+            placeholder="Yalnızca elle kontrol edilmiş TailwindCSS TSX sürümünüz varsa doldurun."
+            className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 font-mono text-[13px] leading-6 text-white outline-none focus:border-violet-500"
+            spellCheck={false}
+          />
+        </label>
+      </div>
+
+      <div className="grid gap-4 xl:grid-cols-2">
+        <label className="block space-y-2">
+          <span className="text-sm text-zinc-400">Responsive notu / kullanım açıklaması</span>
+          <textarea
+            value={form.responsiveNotes ?? ""}
+            onChange={(e) => updateField("responsiveNotes", e.target.value)}
+            rows={4}
+            placeholder="Mobil, tablet ve masaüstü davranışını; breakpoint ve overflow kararlarını açıklayın."
+            className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-white outline-none focus:border-violet-500"
+          />
+        </label>
+        <label className="block space-y-2">
+          <span className="text-sm text-zinc-400">Bağımlılıklar</span>
+          <textarea
+            value={form.dependencies ?? ""}
+            onChange={(e) => updateField("dependencies", e.target.value)}
+            rows={4}
+            placeholder="react-icons, framer-motion, @radix-ui/react-dialog..."
+            className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 font-mono text-[13px] leading-6 text-white outline-none focus:border-violet-500"
+            spellCheck={false}
+          />
+        </label>
+      </div>
 
       <p className="text-xs leading-relaxed text-zinc-500">
-        Güvenlik: Kullanıcıdan gelen kod eval, new Function veya runtime transpile ile
-        çalıştırılmaz; yalnızca detay sayfasında metin olarak gösterilir.
+        Güvenlik: Gönderilen kod metin olarak saklanır ve gösterilir. ComponentHub,
+        kullanıcı JSX/TSX kodunu eval, new Function veya runtime transpilation ile çalıştırmaz.
       </p>
 
       <button

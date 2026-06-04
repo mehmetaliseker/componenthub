@@ -53,8 +53,8 @@ export function DraggableNoteCardPreview() {
           dragging ? "cursor-grabbing ring-2 ring-amber-400/50" : "cursor-grab"
         }`}
       >
-        <p className="text-xs font-semibold uppercase tracking-wider text-amber-300">Note</p>
-        <p className="mt-2 text-sm text-zinc-200">Drag me anywhere in the preview area.</p>
+        <p className="text-xs font-semibold uppercase tracking-wider text-amber-300">Not</p>
+        <p className="mt-2 text-sm text-zinc-200">Beni önizleme alanında sürükleyin.</p>
       </div>
     </div>
   );

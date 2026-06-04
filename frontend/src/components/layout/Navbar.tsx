@@ -23,7 +23,7 @@ export function Navbar() {
             href="/admin/components/new"
             className="rounded-full bg-white/10 px-4 py-2 text-white transition hover:bg-white/20"
           >
-            Yeni Component
+            Component Ekle
           </Link>
         </div>
       </nav>

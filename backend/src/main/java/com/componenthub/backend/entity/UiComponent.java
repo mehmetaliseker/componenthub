@@ -39,6 +39,27 @@ public class UiComponent {
     @Column(name = "style_code", columnDefinition = "TEXT")
     private String styleCode;
 
+    @Column(name = "jsx_code", columnDefinition = "TEXT")
+    private String jsxCode;
+
+    @Column(name = "tsx_code", columnDefinition = "TEXT")
+    private String tsxCode;
+
+    @Column(name = "css_code", columnDefinition = "TEXT")
+    private String cssCode;
+
+    @Column(name = "tailwind_jsx_code", columnDefinition = "TEXT")
+    private String tailwindJsxCode;
+
+    @Column(name = "tailwind_tsx_code", columnDefinition = "TEXT")
+    private String tailwindTsxCode;
+
+    @Column(columnDefinition = "TEXT")
+    private String dependencies;
+
+    @Column(name = "responsive_notes", columnDefinition = "TEXT")
+    private String responsiveNotes;
+
     @Column(name = "is_builtin", nullable = false)
     private boolean builtin;
 
@@ -110,6 +131,62 @@ public class UiComponent {
 
     public void setStyleCode(String styleCode) {
         this.styleCode = styleCode;
+    }
+
+    public String getJsxCode() {
+        return jsxCode;
+    }
+
+    public void setJsxCode(String jsxCode) {
+        this.jsxCode = jsxCode;
+    }
+
+    public String getTsxCode() {
+        return tsxCode;
+    }
+
+    public void setTsxCode(String tsxCode) {
+        this.tsxCode = tsxCode;
+    }
+
+    public String getCssCode() {
+        return cssCode;
+    }
+
+    public void setCssCode(String cssCode) {
+        this.cssCode = cssCode;
+    }
+
+    public String getTailwindJsxCode() {
+        return tailwindJsxCode;
+    }
+
+    public void setTailwindJsxCode(String tailwindJsxCode) {
+        this.tailwindJsxCode = tailwindJsxCode;
+    }
+
+    public String getTailwindTsxCode() {
+        return tailwindTsxCode;
+    }
+
+    public void setTailwindTsxCode(String tailwindTsxCode) {
+        this.tailwindTsxCode = tailwindTsxCode;
+    }
+
+    public String getDependencies() {
+        return dependencies;
+    }
+
+    public void setDependencies(String dependencies) {
+        this.dependencies = dependencies;
+    }
+
+    public String getResponsiveNotes() {
+        return responsiveNotes;
+    }
+
+    public void setResponsiveNotes(String responsiveNotes) {
+        this.responsiveNotes = responsiveNotes;
     }
 
     public boolean isBuiltin() {

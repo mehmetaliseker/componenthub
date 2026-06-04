@@ -11,6 +11,13 @@ export interface ComponentSummary {
 }
 
 export interface ComponentDetail extends ComponentSummary {
+  jsxCode: string | null;
+  tsxCode: string | null;
+  cssCode: string | null;
+  tailwindJsxCode: string | null;
+  tailwindTsxCode: string | null;
+  dependencies: string | null;
+  responsiveNotes: string | null;
   componentCode: string;
   styleCode: string | null;
 }
@@ -18,11 +25,16 @@ export interface ComponentDetail extends ComponentSummary {
 export interface CreateComponentBody {
   name: string;
   slug: string;
-  description?: string;
+  description: string;
   category: string;
   previewType: string;
-  componentCode: string;
-  styleCode?: string;
+  jsxCode?: string;
+  tsxCode?: string;
+  cssCode: string;
+  tailwindJsxCode?: string;
+  tailwindTsxCode?: string;
+  dependencies?: string;
+  responsiveNotes?: string;
   builtin?: boolean;
 }
 

@@ -3,6 +3,7 @@ import type { ComponentDetail, ComponentSummary } from "@/domains/component/comp
 interface RawComponentRecord {
   id?: number;
   name?: string;
+  title?: string;
   slug?: string;
   description?: string | null;
   category?: string;
@@ -12,6 +13,19 @@ interface RawComponentRecord {
   component_code?: string;
   styleCode?: string | null;
   style_code?: string | null;
+  jsxCode?: string | null;
+  jsx_code?: string | null;
+  tsxCode?: string | null;
+  tsx_code?: string | null;
+  cssCode?: string | null;
+  css_code?: string | null;
+  tailwindJsxCode?: string | null;
+  tailwind_jsx_code?: string | null;
+  tailwindTsxCode?: string | null;
+  tailwind_tsx_code?: string | null;
+  dependencies?: string | null;
+  responsiveNotes?: string | null;
+  responsive_notes?: string | null;
   isBuiltin?: boolean;
   builtin?: boolean;
   is_builtin?: boolean;
@@ -55,7 +69,7 @@ export function normalizeComponentSummary(raw: unknown): ComponentSummary {
 
   return {
     id: record.id ?? 0,
-    name: readString(record.name),
+    name: readString(record.name ?? record.title),
     slug: readString(record.slug),
     description: readOptionalString(record.description),
     category: readString(record.category),
@@ -69,29 +83,48 @@ export function normalizeComponentSummary(raw: unknown): ComponentSummary {
 export function normalizeComponentDetail(raw: unknown): ComponentDetail {
   if (Array.isArray(raw)) {
     console.error(
-      "[ComponentHub] Expected component detail object but received list:",
+      "[ComponentHub] Component detayı nesne olmalıydı ancak liste geldi:",
       raw,
     );
     throw new Error(
-      "Component detail endpoint returned a list. Check getBySlug path.",
+      "Component detay endpointi liste döndürdü. getBySlug yolunu kontrol edin.",
     );
   }
 
   if (!isRecord(raw)) {
-    throw new Error("Invalid component detail response from API");
+    throw new Error("API geçersiz component detay verisi döndürdü.");
   }
 
-  const componentCode = readString(raw.componentCode ?? raw.component_code);
-  const styleCodeRaw = readString(raw.styleCode ?? raw.style_code);
+  const legacyComponentCode = readString(raw.componentCode ?? raw.component_code);
+  const legacyStyleCode = readOptionalString(raw.styleCode ?? raw.style_code);
+  const jsxCode = readOptionalString(raw.jsxCode ?? raw.jsx_code);
+  const tsxCode =
+    readOptionalString(raw.tsxCode ?? raw.tsx_code) ??
+    (legacyComponentCode.trim().length > 0 ? legacyComponentCode : null);
+  const cssCode = readOptionalString(raw.cssCode ?? raw.css_code) ?? legacyStyleCode;
+  const tailwindJsxCode = readOptionalString(
+    raw.tailwindJsxCode ?? raw.tailwind_jsx_code,
+  );
+  const tailwindTsxCode = readOptionalString(
+    raw.tailwindTsxCode ?? raw.tailwind_tsx_code,
+  );
+  const componentCode = tsxCode ?? jsxCode ?? "";
 
   if (process.env.NODE_ENV === "development" && componentCode.trim().length === 0) {
-    console.error("[ComponentHub] Empty componentCode from API:", raw);
+    console.error("[ComponentHub] API üzerinden boş jsxCode/tsxCode geldi:", raw);
   }
 
   return {
     ...normalizeComponentSummary(raw),
+    jsxCode,
+    tsxCode,
+    cssCode,
+    tailwindJsxCode,
+    tailwindTsxCode,
+    dependencies: readOptionalString(raw.dependencies),
+    responsiveNotes: readOptionalString(raw.responsiveNotes ?? raw.responsive_notes),
     componentCode,
-    styleCode: styleCodeRaw.trim().length > 0 ? styleCodeRaw : null,
+    styleCode: cssCode,
   };
 }
 

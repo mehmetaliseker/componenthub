@@ -7,7 +7,7 @@ interface ErrorPayload {
 }
 
 export async function parseApiError(response: Response): Promise<ApiError> {
-  const fallbackMessage = `Request failed with status ${response.status}`;
+  const fallbackMessage = `İstek ${response.status} durum koduyla başarısız oldu.`;
 
   try {
     const contentType = response.headers.get("content-type") ?? "";
@@ -15,7 +15,7 @@ export async function parseApiError(response: Response): Promise<ApiError> {
       const payload = (await response.json()) as ErrorPayload;
       return new ApiError(
         payload.status ?? response.status,
-        payload.error ?? "Error",
+        payload.error ?? "Hata",
         payload.message ?? fallbackMessage,
       );
     }
@@ -26,11 +26,11 @@ export async function parseApiError(response: Response): Promise<ApiError> {
   try {
     const text = await response.text();
     if (text.trim().length > 0) {
-      return new ApiError(response.status, "Error", text);
+      return new ApiError(response.status, "Hata", text);
     }
   } catch {
     // ignore
   }
 
-  return new ApiError(response.status, "Error", fallbackMessage);
+  return new ApiError(response.status, "Hata", fallbackMessage);
 }

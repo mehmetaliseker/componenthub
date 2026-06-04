@@ -1,6 +1,6 @@
 import { CopyButton } from "@/components/code/CopyButton";
 
-export type CodeLanguage = "tsx" | "css" | "bash" | "text";
+export type CodeLanguage = "jsx" | "tsx" | "css" | "bash" | "text";
 
 interface CodeBlockProps {
   title: string;
@@ -10,10 +10,11 @@ interface CodeBlockProps {
 }
 
 const languageLabel: Record<CodeLanguage, string> = {
+  jsx: "JSX",
   tsx: "TSX",
   css: "CSS",
   bash: "Bash",
-  text: "Text",
+  text: "Metin",
 };
 
 export function CodeBlock({

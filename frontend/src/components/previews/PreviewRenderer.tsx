@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { AnimatedButtonPreview } from "@/components/previews/AnimatedButtonPreview";
 import { DraggableNoteCardPreview } from "@/components/previews/DraggableNoteCardPreview";
 import { GlassLoginCardPreview } from "@/components/previews/GlassLoginCardPreview";
@@ -6,30 +7,50 @@ import { PricingCardPreview } from "@/components/previews/PricingCardPreview";
 
 interface PreviewRendererProps {
   previewType: string;
+  cssCode?: string | null;
 }
 
 const FALLBACK_MESSAGE =
-  "Bu component için canlı önizleme bulunmuyor. Kodunu inceleyip kendi projenizde kullanabilirsiniz.";
+  "Bu component için kayıtlı canlı önizleme bulunmuyor. Kodu inceleyip projenizde kullanabilirsiniz.";
 
-export function PreviewRenderer({ previewType }: PreviewRendererProps) {
+function sanitizePreviewCss(cssCode: string | null | undefined): string {
+  if (!cssCode) {
+    return "";
+  }
+  return cssCode
+    .replace(/@import[^;]+;/gi, "")
+    .replace(/url\(\s*['"]?javascript:[^)]+\)/gi, "none");
+}
+
+export function PreviewRenderer({ previewType, cssCode }: PreviewRendererProps) {
   const normalizedType = previewType.trim().toLowerCase();
+  const previewCss = sanitizePreviewCss(cssCode);
+
+  function withPreviewCss(node: ReactNode): ReactNode {
+    return (
+      <>
+        {previewCss && <style>{previewCss}</style>}
+        {node}
+      </>
+    );
+  }
 
   switch (normalizedType) {
     case "animated-button":
-      return <AnimatedButtonPreview />;
+      return withPreviewCss(<AnimatedButtonPreview />);
     case "pricing-card":
-      return <PricingCardPreview />;
+      return withPreviewCss(<PricingCardPreview />);
     case "glass-login-card":
-      return <GlassLoginCardPreview />;
+      return withPreviewCss(<GlassLoginCardPreview />);
     case "gradient-navbar":
-      return <GradientNavbarPreview />;
+      return withPreviewCss(<GradientNavbarPreview />);
     case "draggable-note-card":
-      return <DraggableNoteCardPreview />;
+      return withPreviewCss(<DraggableNoteCardPreview />);
     default:
-      return (
+      return withPreviewCss(
         <div className="max-w-sm rounded-xl border border-dashed border-zinc-600 bg-zinc-900/50 px-6 py-10 text-center text-sm leading-relaxed text-zinc-400">
           {FALLBACK_MESSAGE}
-        </div>
+        </div>,
       );
   }
 }

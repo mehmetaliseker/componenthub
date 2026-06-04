@@ -22,14 +22,14 @@ export default async function ComponentsPage() {
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-white">Component Galerisi</h1>
         <p className="mt-2 text-zinc-400">
-          Tüm kayıtlı bileşenleri inceleyin; detayda canlı önizleme ve TSX/CSS kodlarına
-          erişin.
+          Tüm kayıtlı componentleri inceleyin; detay sayfasında responsive önizleme,
+          JSX, TSX, CSS ve TailwindCSS kodlarına erişin.
         </p>
       </div>
 
       {errorMessage && (
         <div className="mb-8 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
-          {errorMessage} — Backend&apos;in çalıştığından emin olun (
+          {errorMessage} Sunucunun çalıştığından emin olun (
           <code className="text-xs">http://localhost:8080</code>).
         </div>
       )}

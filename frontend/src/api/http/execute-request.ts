@@ -51,7 +51,7 @@ export function buildComponentPath(
     case ComponentMethods.GetBySlug: {
       const slug = params?.slug;
       if (slug === undefined || slug.length === 0) {
-        throw new HttpRequestError("Component slug is required", 400);
+        throw new HttpRequestError("Component slug alanı zorunludur.", 400);
       }
       return `${API_COMPONENTS_BASE}/${encodeURIComponent(slug)}`;
     }
@@ -60,7 +60,7 @@ export function buildComponentPath(
     case ComponentMethods.Delete: {
       const id = params?.id;
       if (id === undefined || id === null) {
-        throw new HttpRequestError("Component id is required", 400);
+        throw new HttpRequestError("Component ID alanı zorunludur.", 400);
       }
       return `${API_COMPONENTS_BASE}/${encodeURIComponent(String(id))}`;
     }
@@ -75,13 +75,13 @@ export function buildComponentPath(
 async function parseJsonBody<TResponse>(response: Response): Promise<TResponse> {
   const text = await response.text();
   if (text.trim().length === 0) {
-    throw new HttpRequestError("API returned an empty response body");
+    throw new HttpRequestError("API boş yanıt döndürdü.");
   }
 
   try {
     return JSON.parse(text) as TResponse;
   } catch {
-    throw new HttpRequestError("API returned invalid JSON");
+    throw new HttpRequestError("API geçersiz JSON döndürdü.");
   }
 }
 
@@ -120,7 +120,7 @@ export async function executeJsonRequest<TResponse, TBody = unknown>(
       cache: "no-store",
     });
   } catch {
-    throw new HttpRequestError("Network error: unable to reach the API");
+    throw new HttpRequestError("Sunucuya bağlanırken bir hata oluştu.");
   }
 
   if (!response.ok) {

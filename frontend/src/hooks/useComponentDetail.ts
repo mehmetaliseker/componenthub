@@ -38,7 +38,9 @@ export function useComponentDetail(slug: string): UseComponentDetailResult {
           setDebugRaw({
             slug: detail.slug,
             previewType: detail.previewType,
-            componentCodeLength: detail.componentCode.length,
+            jsxCodeLength: detail.jsxCode?.length ?? 0,
+            tsxCodeLength: detail.tsxCode?.length ?? 0,
+            cssCodeLength: detail.cssCode?.length ?? 0,
             componentCodePreview: detail.componentCode.slice(0, 80),
           });
         }

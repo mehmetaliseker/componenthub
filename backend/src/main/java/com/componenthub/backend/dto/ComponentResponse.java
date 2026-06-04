@@ -8,6 +8,7 @@ public class ComponentResponse {
 
     private Long id;
     private String name;
+    private String title;
     private String slug;
     private String description;
     private String category;
@@ -20,6 +21,26 @@ public class ComponentResponse {
 
     @JsonProperty("styleCode")
     private String styleCode;
+
+    @JsonProperty("jsxCode")
+    private String jsxCode;
+
+    @JsonProperty("tsxCode")
+    private String tsxCode;
+
+    @JsonProperty("cssCode")
+    private String cssCode;
+
+    @JsonProperty("tailwindJsxCode")
+    private String tailwindJsxCode;
+
+    @JsonProperty("tailwindTsxCode")
+    private String tailwindTsxCode;
+
+    private String dependencies;
+
+    @JsonProperty("responsiveNotes")
+    private String responsiveNotes;
 
     private boolean builtin;
 
@@ -43,6 +64,14 @@ public class ComponentResponse {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getSlug() {
@@ -91,6 +120,62 @@ public class ComponentResponse {
 
     public void setStyleCode(String styleCode) {
         this.styleCode = styleCode;
+    }
+
+    public String getJsxCode() {
+        return jsxCode;
+    }
+
+    public void setJsxCode(String jsxCode) {
+        this.jsxCode = jsxCode;
+    }
+
+    public String getTsxCode() {
+        return tsxCode;
+    }
+
+    public void setTsxCode(String tsxCode) {
+        this.tsxCode = tsxCode;
+    }
+
+    public String getCssCode() {
+        return cssCode;
+    }
+
+    public void setCssCode(String cssCode) {
+        this.cssCode = cssCode;
+    }
+
+    public String getTailwindJsxCode() {
+        return tailwindJsxCode;
+    }
+
+    public void setTailwindJsxCode(String tailwindJsxCode) {
+        this.tailwindJsxCode = tailwindJsxCode;
+    }
+
+    public String getTailwindTsxCode() {
+        return tailwindTsxCode;
+    }
+
+    public void setTailwindTsxCode(String tailwindTsxCode) {
+        this.tailwindTsxCode = tailwindTsxCode;
+    }
+
+    public String getDependencies() {
+        return dependencies;
+    }
+
+    public void setDependencies(String dependencies) {
+        this.dependencies = dependencies;
+    }
+
+    public String getResponsiveNotes() {
+        return responsiveNotes;
+    }
+
+    public void setResponsiveNotes(String responsiveNotes) {
+        this.responsiveNotes = responsiveNotes;
     }
 
     @JsonProperty("isBuiltin")

@@ -31,7 +31,7 @@ public class ComponentService {
     @Transactional(readOnly = true)
     public ComponentResponse getBySlug(String slug) {
         UiComponent component = uiComponentRepository.findBySlug(normalizeSlug(slug))
-                .orElseThrow(() -> new ComponentNotFoundException("Component not found: " + slug));
+                .orElseThrow(() -> new ComponentNotFoundException("Component bulunamadı: " + slug));
         return ComponentMapper.toResponse(component);
     }
 
@@ -48,7 +48,7 @@ public class ComponentService {
     @Transactional
     public ComponentResponse update(Long id, ComponentRequest request) {
         UiComponent entity = uiComponentRepository.findById(id)
-                .orElseThrow(() -> new ComponentNotFoundException("Component not found with id: " + id));
+                .orElseThrow(() -> new ComponentNotFoundException("Component bulunamadı. ID: " + id));
         String slug = normalizeSlug(request.getSlug());
         validateSlugAvailable(slug, id);
         ComponentMapper.applyRequest(entity, request);
@@ -60,7 +60,7 @@ public class ComponentService {
     @Transactional
     public void delete(Long id) {
         if (!uiComponentRepository.existsById(id)) {
-            throw new ComponentNotFoundException("Component not found with id: " + id);
+            throw new ComponentNotFoundException("Component bulunamadı. ID: " + id);
         }
         uiComponentRepository.deleteById(id);
     }
@@ -70,7 +70,7 @@ public class ComponentService {
                 ? uiComponentRepository.existsBySlug(slug)
                 : uiComponentRepository.existsBySlugAndIdNot(slug, excludeId);
         if (exists) {
-            throw new DuplicateSlugException("Slug already exists: " + slug);
+            throw new DuplicateSlugException("Bu slug zaten kullanılıyor: " + slug);
         }
     }
 
